@@ -59,6 +59,10 @@ main:	# use syscall of code 30 to get the current time as the number of millisec
 						# i.e. hence the range of the SECRET number is [1, 100]
 						#
 						# $s2 stores the Secret (lucky) number
+	li $v0, 1
+	add $a0, $s2, $zero
+	syscall
+
 
 guessLoop: 
 	# your code begins here
@@ -107,24 +111,37 @@ guessLoop:
 	
 
 	# assuming the input number is within the range in output, update the range for the next output 
-	
+
+
+
 	# if input number ($v0) less than lucky number, update the lower bound
-	blt $v0, $s2, lessThan
+	slt $t1, $v0, $s2
+	bne $t1, $zero, lessThan
+	j elseIf 
 	lessThan:
-		
-	
-	
+		add $s0, $v0, $zero
+		j guessLoop
+			
 	# if input number ($v0) greater than lucky number, update upper bound
 	# then goto guessLoop to ask user input again 
-	
-
+	elseIf:
+	slt $t1, $s2, $v0
+	bne $t1, $zero, greaterThan
+	j exit
+	greaterThan:
+		add $s1, $v0, $zero
+		j guessLoop
 
 	# if the user's guess is correct	
 	# output congratulation message and exit the program.
+	exit:
+	li $v0, 4
+	la $a0, correctMsg
+	syscall 
 
-
+	li $v0, 10
+	syscall
 	
-
 	# further work if you work out the basic guessingGame.s successfully and want more challenge
 	# user input validation
 	# two-player mode	  
